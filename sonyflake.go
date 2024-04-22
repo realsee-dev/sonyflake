@@ -10,6 +10,7 @@ package sonyflake
 import (
 	"errors"
 	"net"
+	"os"
 	"sync"
 	"time"
 
@@ -178,7 +179,9 @@ func privateIPv4(interfaceAddrs types.InterfaceAddrs) (net.IP, error) {
 }
 
 func isPrivateIPv4(ip net.IP) bool {
-	return true
+	if val, _ := os.LookupEnv("SONYFLAKE_IGNORE_PRIVATE_IP"); val == "1" {
+		return ip != nil
+	}
 
 	return ip != nil &&
 		(ip[0] == 10 || ip[0] == 172 && (ip[1] >= 16 && ip[1] < 32) || ip[0] == 192 && ip[1] == 168)
